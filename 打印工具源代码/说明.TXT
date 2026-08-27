@@ -1,0 +1,6 @@
+操作步骤：先使用“解析”把卡组代码提取成图片放在一个文件夹里面，再用“拼接”将指定文件夹拼成可打印的大图。使用A4纸张时推荐一次在文件夹放16或者25张图以制作符合纸张长宽比（约为5∶7，与单张卡牌一致）的高清可印刷大图。总部可以用国家卡背代替。拼接时只能使用500*702像素的图片。
+如果受到“desktop.ini”干扰，尝试运行清理ini程序。
+使用 Google Gemini 3.6 Flash 开发。
+资源来自Kards官网http://kards.com和Github仓库https://github.com/OhMinecraftLauncher/OhMinecraftLauncher.github.io，网站https://ohminecraftlauncher.github.io。
+一切权利保留。使用请注明出处。
+有问题联系wuchihyuan.2010@gmail.com或到仓库提交议题。
