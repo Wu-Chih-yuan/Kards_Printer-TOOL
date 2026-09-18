@@ -1,6 +1,7 @@
 import os
 import json
 import ctypes
+import sys
 import tkinter as tk
 from tkinter import filedialog, ttk
 from PIL import Image
@@ -14,8 +15,16 @@ except Exception:
     except Exception:
         pass
 
-# 程序所在目录：所有相对路径与配置文件都以此为基准，与"当前工作目录"无关
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# 程序所在目录：所有相对路径与配置文件都以此为基准，与"当前工作目录"无关。
+# 注意：打包成 exe 后 __file__ 会指向 PyInstaller 的解压临时目录（%TEMP%\_MEIxxxxxx），
+#       因此冻结运行时必须改用 sys.executable 所在目录作为基准。
+if os.environ.get("KARDS_BASE_DIR"):
+    # 允许用环境变量手动指定基准目录
+    BASE_DIR = os.path.abspath(os.environ["KARDS_BASE_DIR"])
+elif getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # 拼接.pyw 与 解析.pyw 共享同一个 gui_config.json（各自只负责写自己的键）
 CONFIG_FILE = os.path.join(BASE_DIR, "gui_config.json")
 # 旧版本使用 gui_config_b.json，读取时会自动合并进来（首次运行完成迁移）
@@ -278,13 +287,15 @@ class ImageGridMergerGUI:
         self.log_box.delete("1.0", tk.END)
         self.log_box.config(state="disabled")
 
+        self.log(f"程序目录: {self.base_dir}")
         self.log(f"图片文件夹: {self.to_relative_path(input_dir)}")
         self.log(f"解析为绝对路径: {input_dir}")
         self.log("")
 
         if not os.path.isdir(input_dir):
             self.log(f"❌ 错误: 请选择有效的文件夹路径！ -> {input_dir}")
-            self.log("💡 提示: 相对路径以程序所在目录为基准；也可直接使用绝对路径（支持带引号粘贴）。")
+            self.log(f"💡 提示: 相对路径以程序所在目录为基准 -> {self.base_dir}")
+            self.log("        也可直接使用绝对路径（支持带引号粘贴）。")
             return
 
         supported_exts = ('.png', '.avif')
