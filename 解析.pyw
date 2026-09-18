@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import ctypes
+import sys
 import tkinter as tk
 from tkinter import filedialog, ttk
 
@@ -22,8 +23,16 @@ except Exception:
         pass
 
 # ==================== 共用配置文件 ====================
-# 程序所在目录：相对路径与配置文件都以此为基准，与"当前工作目录"无关
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# 程序所在目录：相对路径与配置文件都以此为基准，与"当前工作目录"无关。
+# 注意：打包成 exe 后 __file__ 会指向 PyInstaller 的解压临时目录（%TEMP%\_MEIxxxxxx），
+#       因此冻结运行时必须改用 sys.executable 所在目录作为基准。
+if os.environ.get("KARDS_BASE_DIR"):
+    # 允许用环境变量手动指定基准目录
+    BASE_DIR = os.path.abspath(os.environ["KARDS_BASE_DIR"])
+elif getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # 解析.pyw 与 拼接.pyw 共享同一个 gui_config.json（各自只负责写自己的键）
 CONFIG_FILE = os.path.join(BASE_DIR, "gui_config.json")
 # 旧版本遗留的配置文件位置，读取时会自动合并进来（首次运行完成迁移）
@@ -402,8 +411,17 @@ class DeckPickerGUI:
         self.log_box.delete("1.0", tk.END)
         self.log_box.config(state="disabled")
 
+        self.log(f"程序目录: {BASE_DIR}")
+
         if not os.path.exists(source_dir):
             self.log(f"❌ 错误: 指定的图片源目录不存在 -> {source_dir}")
+            self.log(f"💡 提示: 相对路径以程序所在目录为基准 -> {BASE_DIR}")
+            self.log("        打包成 exe 后，请把 card 文件夹与 JSON 数据库放在 exe 同级目录。")
+            return
+
+        if not os.path.exists(json_path):
+            self.log(f"❌ 错误: 数据库文件不存在 -> {json_path}")
+            self.log(f"💡 提示: 相对路径以程序所在目录为基准 -> {BASE_DIR}")
             return
 
         mapping = self.load_mapping(json_path)
