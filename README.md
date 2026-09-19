@@ -12,7 +12,7 @@
 
 Windows 10以上用户下载发行版<https://github.com/Wu-Chih-yuan/Kards_Printer-TOOL/releases/tag/v1.1-beta>即可使用。
 
-其他操作系统尚无编译版本，可以使用发行版的资源，加上Python环境来运行；也欢迎各位提供macOS等版本的软件包。
+其他操作系统尚无编译版本，可以使用仓库源代码配合发行版的资源，加上Python环境来运行；也欢迎各位提供macOS等版本的软件包。
 
 开发过程借助了AI工具。
 
